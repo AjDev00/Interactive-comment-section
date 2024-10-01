@@ -15,6 +15,8 @@ export default function Input() {
   const [editIndex, setEditIndex] = useState(null);
   const [activeReplyIndex, setActiveReplyIndex] = useState(null);
   const [editResponseIndex, setEditResponseIndex] = useState(null);
+  const [activeResponseIndex, setActiveResponseIndex] = useState(null);
+  const [responseIndex, setResponseIndex] = useState(null);
   const defaultComment = {
     user_comment: "",
   };
@@ -69,11 +71,17 @@ export default function Input() {
           setActiveReplyIndex={setActiveReplyIndex}
           setEditResponseIndex={setEditResponseIndex}
           editResponseIndex={editResponseIndex}
+          activeResponseIndex={activeResponseIndex}
+          setActiveResponseIndex={setActiveResponseIndex}
+          setResponseIndex={setResponseIndex}
+          responseIndex={responseIndex}
         />
       </div>
       {editIndex === null &&
         activeReplyIndex === null &&
         editResponseIndex === null &&
+        activeResponseIndex === null &&
+        responseIndex === null &&
         !commentLoading && (
           <div className="flex justify-center items-center mt-14">
             <form

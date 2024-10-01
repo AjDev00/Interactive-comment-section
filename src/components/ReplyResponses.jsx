@@ -1,67 +1,87 @@
+import { toast } from "react-toastify";
 import avatarImg from "../assets/avatars/image-juliusomo.png";
+import { insertResponseReply } from "../services/commentServices";
 import loadingImg from "../assets/loading.svg";
+import { useState } from "react";
 
-export default function EditResponses({
+export default function ReplyResponses({
   register,
   errors,
   handleSubmit,
-  handleEditReply,
-  responseLoading,
+  replyId,
+  commentId,
 }) {
+  const [loading, setLoading] = useState(null);
   //error handling.
   function errMsg(error) {
     if (error?.type === "required") {
       return "This field is required!";
     } else if (error?.type === "min") {
-      return "Min is 3 characters!";
+      return "Min is 3 characters";
     } else {
       return "Error!";
     }
   }
 
-  function onSubmitEditResponse(data) {
-    handleEditReply(data, data.id);
-  }
+  //insert response reply.
+  async function submitReplyResponses(data) {
+    setLoading(true);
 
+    const finalData = {
+      reply_id: replyId,
+      comment_id: commentId,
+      reply_response: data.reply_response,
+    };
+
+    const rep = await insertResponseReply(finalData);
+    if (rep.status === true) {
+      toast(rep.message);
+      setLoading(false);
+      window.location.reload();
+    } else {
+      toast("Unsuccessfull!");
+      setLoading(false);
+    }
+  }
   return (
     <div>
-      <div className="ml-4">
+      <div>
         <form
-          onSubmit={handleSubmit(onSubmitEditResponse)}
-          className="flex flex-col gap-4 pt-4 border border-white px-4 rounded-lg bg-white py-2 w-full mb-3"
+          onSubmit={handleSubmit(submitReplyResponses)}
+          className="flex flex-col border border-white bg-white rounded-md w-[330px] p-4 gap-4 mt-2"
         >
           <textarea
             cols={30}
             rows={5}
             className={
-              errors.reply_comment
+              errors.reply_response
                 ? "border border-red-500 w-72 px-2 py-2 rounded-md text-left focus:outline-red-500"
                 : "border border-slate-300 w-72 px-2 py-2 rounded-md text-left focus:outline-blue-950"
             }
             type="text"
-            {...register("reply_comment", {
+            {...register("reply_response", {
               required: true,
-              min: 3,
             })}
+            placeholder="Type a reply..."
           ></textarea>
-          {errors.reply_comment && (
+          {errors.reply_response && (
             <span className="text-red-500 font-semibold">
-              {errMsg(errors.reply_comment)}
+              {errMsg(errors.reply_response)}
             </span>
           )}
           <div className="flex flex-row justify-between items-center">
             <div>
               <img src={avatarImg} alt="" className="w-8" />
             </div>
-            {!responseLoading && (
+            {!loading && (
               <button
                 type="submit"
                 className="text-[15px] border border-transparent bg-blue-800 cursor-pointer text-white p-3 font-bold px-5 rounded-md hover:opacity-60 duration-300"
               >
-                EDIT
+                REPLY
               </button>
             )}
-            {responseLoading && (
+            {loading && (
               <div className="flex justify-center items-center ">
                 <img src={loadingImg} alt="" className="w-10 animate-spin" />
               </div>

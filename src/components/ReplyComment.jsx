@@ -1,6 +1,8 @@
 import { toast } from "react-toastify";
 import avatarImg from "../assets/avatars/image-juliusomo.png";
 import { insertReply } from "../services/commentServices";
+import { useState } from "react";
+import loadingImg from "../assets/loading.svg";
 
 export default function ReplyComment({
   register,
@@ -8,6 +10,8 @@ export default function ReplyComment({
   handleSubmit,
   commentId,
 }) {
+  const [replyCommentLoading, setReplyCommentLoading] = useState(null);
+
   //error handling.
   function errMsg(error) {
     if (error?.type === "required") {
@@ -21,6 +25,8 @@ export default function ReplyComment({
 
   //insert reply.
   async function submitReply(data) {
+    setReplyCommentLoading(true);
+
     const finalData = {
       comment_id: commentId,
       reply_comment: data.reply_comment,
@@ -29,9 +35,11 @@ export default function ReplyComment({
     const reply = await insertReply(finalData);
     if (reply.status === true) {
       toast(reply.message);
+      setReplyCommentLoading(false);
       window.location.reload();
     } else {
       toast("Unable to reply!");
+      setReplyCommentLoading(false);
     }
 
     console.log(data.reply_comment);
@@ -68,12 +76,19 @@ export default function ReplyComment({
             <div>
               <img src={avatarImg} alt="" className="w-8" />
             </div>
-            <button
-              type="submit"
-              className="text-[15px] border border-transparent bg-blue-800 cursor-pointer text-white p-3 font-bold px-5 rounded-md hover:opacity-60 duration-300"
-            >
-              REPLY
-            </button>
+            {!replyCommentLoading && (
+              <button
+                type="submit"
+                className="text-[15px] border border-transparent bg-blue-800 cursor-pointer text-white p-3 font-bold px-5 rounded-md hover:opacity-60 duration-300"
+              >
+                REPLY
+              </button>
+            )}
+            {replyCommentLoading && (
+              <div className="flex justify-center items-center ">
+                <img src={loadingImg} alt="" className="w-10 animate-spin" />
+              </div>
+            )}
           </div>
         </form>
       </div>

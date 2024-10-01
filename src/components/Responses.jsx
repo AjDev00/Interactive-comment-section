@@ -9,6 +9,9 @@ import {
 } from "../services/commentServices";
 import { toast } from "react-toastify";
 import EditResponses from "./EditResponses";
+import ReplyResponses from "./ReplyResponses";
+import { useState } from "react";
+import DisplayReplyResponses from "./DisplayReplyResponses";
 
 export default function Responses({
   comment,
@@ -18,7 +21,15 @@ export default function Responses({
   handleSubmit,
   setEditResponseIndex,
   editResponseIndex,
+  activeResponseIndex,
+  setActiveResponseIndex,
+  setResponseIndex,
+  responseIndex,
 }) {
+  const [responseLoading, setResponseLoading] = useState(null);
+  const [replyId, setReplyId] = useState("");
+  const [commentId, setCommentId] = useState("");
+
   //delete a reply.
   async function handleDeleteReply($id) {
     const data = await deleteReply($id);
@@ -33,15 +44,15 @@ export default function Responses({
 
   //update reply.
   async function handleEditReply(data, id) {
-    // setEditLoading(true);
+    setResponseLoading(true);
+    console.log(responseLoading);
 
     const edit = await editReply(data, id);
 
     if (edit.status === true) {
       toast("Updated Successfully!");
-      //   setEditIndex(null);
-      //   window.location.reload();
-      // setEditLoading(false);
+      window.location.reload();
+      setResponseLoading(false);
     } else {
       toast("Unsuccessfull!");
     }
@@ -52,6 +63,7 @@ export default function Responses({
     const data = await singleReply($id);
 
     const singleRep = data.data;
+    console.log(singleRep);
     reset(singleRep);
   }
 
@@ -64,13 +76,18 @@ export default function Responses({
     setEditResponseIndex(index === editResponseIndex ? null : index);
   }
 
+  function handleReplyClick(index) {
+    setActiveResponseIndex(index === activeResponseIndex ? null : index);
+    setCommentId(comment.id);
+  }
+
   return (
     <div>
       {comment &&
         comment.replies.map((reply, index) => (
           <div key={index}>
-            <div className="flex flex-col gap-4 justify-center items-center px-0 border-l-2 border-slate-300">
-              {editResponseIndex !== index && (
+            <div className="flex flex-col gap-0 justify-center items-center px-0 border-l-2 border-slate-300">
+              {editResponseIndex !== reply.id && (
                 <div className="flex flex-col pt-4 border border-white px-4 rounded-lg bg-white py-2 w-full ml-7 mb-3">
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-row gap-3 items-center">
@@ -110,28 +127,63 @@ export default function Responses({
                           className="h-fit"
                         />
                         <img
-                          onClick={() => handleEdit(index, reply.id)}
+                          onClick={() => handleEdit(reply.id, reply.id)}
                           src={editImg}
                           alt=""
                           className="h-fit"
                         />
-                        <img src={replyImg} alt="" className="h-fit" />
+                        <img
+                          onClick={() =>
+                            handleReplyClick(reply.id) - setReplyId(reply.id)
+                          }
+                          src={replyImg}
+                          alt=""
+                          className="h-fit"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {editResponseIndex === index && (
+              {/* reply a response. */}
+              {activeResponseIndex === reply.id && (
+                <div className="mb-4">
+                  <ReplyResponses
+                    register={register}
+                    errors={errors}
+                    handleSubmit={handleSubmit}
+                    replyId={replyId}
+                    commentId={commentId}
+                  />
+                </div>
+              )}
+
+              {/* edit a response */}
+              {editResponseIndex === reply.id && (
                 <div>
                   <EditResponses
                     register={register}
                     errors={errors}
                     handleSubmit={handleSubmit}
                     handleEditReply={handleEditReply}
+                    responseLoading={responseLoading}
                   />
                 </div>
               )}
+
+              {/* view responses reply. */}
+              <div className="mr-3">
+                <DisplayReplyResponses
+                  comment={comment}
+                  register={register}
+                  errors={errors}
+                  handleSubmit={handleSubmit}
+                  reset={reset}
+                  setResponseIndex={setResponseIndex}
+                  responseIndex={responseIndex}
+                />
+              </div>
             </div>
           </div>
         ))}

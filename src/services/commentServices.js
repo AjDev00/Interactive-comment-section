@@ -88,3 +88,47 @@ export async function singleReply(id) {
 
   return await res.json();
 }
+
+//insert response reply.
+export async function insertResponseReply(data) {
+  const res = await fetch("http://localhost:8000/api/reply-response", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+}
+
+//delete response.
+export async function deleteResponse(id) {
+  const res = await fetch("http://localhost:8000/api/erase-response/" + id, {
+    method: "DELETE",
+  });
+
+  return res.json();
+}
+
+//update response.
+export async function editResponses(data, id) {
+  const res = await fetch("http://localhost:8000/api/edit-response/" + id, {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+}
+
+//get a single reply response.
+export async function singleResponse(id) {
+  const res = await fetch(
+    "http://localhost:8000/api/get-single-response/" + id
+  );
+
+  return await res.json();
+}

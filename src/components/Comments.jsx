@@ -15,6 +15,7 @@ import editImg from "../assets/icon-edit.svg";
 import EditComment from "./EditComments";
 import ReplyComment from "./ReplyComment";
 import Responses from "./Responses";
+import DisplayReplyResponses from "./DisplayReplyResponses";
 
 export default function Comments({
   register,
@@ -29,6 +30,10 @@ export default function Comments({
   setActiveReplyIndex,
   setEditResponseIndex,
   editResponseIndex,
+  activeResponseIndex,
+  setActiveResponseIndex,
+  setResponseIndex,
+  responseIndex,
 }) {
   const [comments, setComments] = useState([]);
   const [editLoading, setEditLoading] = useState(false);
@@ -167,6 +172,8 @@ export default function Comments({
                   </div>
                 </div>
               )}
+
+              {/* edit comment. */}
               {editIndex === index && (
                 <div>
                   <EditComment
@@ -178,6 +185,8 @@ export default function Comments({
                   />
                 </div>
               )}
+
+              {/* reply comment. */}
               <div>
                 {activeReplyIndex === index && (
                   <ReplyComment
@@ -188,6 +197,8 @@ export default function Comments({
                   />
                 )}
               </div>
+
+              {/* view responses. */}
               {comments && (
                 <div className="mr-3 mt-3">
                   <Responses
@@ -198,6 +209,11 @@ export default function Comments({
                     handleSubmit={handleSubmit}
                     setEditResponseIndex={setEditResponseIndex}
                     editResponseIndex={editResponseIndex}
+                    activeResponseIndex={activeResponseIndex}
+                    setActiveResponseIndex={setActiveResponseIndex}
+                    commentId={commentId}
+                    setResponseIndex={setResponseIndex}
+                    responseIndex={responseIndex}
                   />
                 </div>
               )}
